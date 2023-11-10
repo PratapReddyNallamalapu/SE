@@ -1,5 +1,4 @@
 # SE
-Sure, I'll outline a step-by-step process to accomplish the tasks using AWS Cloud9, DynamoDB, Lambda, API Gateway, and testing the application.
 
 Step 1: Set Up AWS Cloud9
 1. Create an AWS Cloud9 Environment:
