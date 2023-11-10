@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Property Management</title>
+</head>
+<body>
+  <h1>Property Management</h1>
+  <h2>Create Property</h2>
+  <form id="create-property-form">
+    <label for="pid">Property ID:</label>
+    <input type="text" id="pid" name="pid" required>
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required>
+    <label for="location">Location:</label>
+    <input type="text" id="location" name="location" required>
+    <button type="submit">Create Property</button>
+  </form>
+
+  <hr>
+
+  <h2>Get Property Details</h2>
+  <form id="get-property-form">
+    <label for="pid">Property ID:</label>
+    <input type="text" id="get-pid" name="get-pid" required>
+    <button type="submit">Get Property Details</button>
+  </form>
+
+  <hr>
+
+  <hr>
+
+  <script src="https://sdk.amazonaws.com/js/aws-sdk-2.110.0.min.js"></script>
+  <script>
+
+    const docClient = new AWS.DynamoDB.DocumentClient();
+    const createPropertyForm = document.getElementById("create-property-form");
+    const getPropertyForm = document.getElementById("get-property-form");
+
+    createPropertyForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const pid = document.getElementById("pid").value;
+      const name = document.getElementById("name").value;
+      const location = document.getElementById("location").value;
+
+      const params = {
+        TableName: "YOUR_DYNAMODB_TABLE_NAME",
+        Item: { pid, name, location }
+      };
+
+      docClient.put(params, (err, data) => {
+        if (err) {
+          alert("Failed to create the property.");
+        } else {
+          alert("Property created successfully.");
+          createPropertyForm.reset();
+        }
+      });
+    });
+
+    getPropertyForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const pid = document.getElementById("get-pid").value;
+
+      const params = {
+        TableName: "YOUR_DYNAMODB_TABLE_NAME",
+        Key: { pid }
+      };
+
+      docClient.get(params, (err, data) => {
+        if (err) {
+          alert("Failed to fetch property details.");
+        } else {
+          if (data.Item) {
+            const property = data.Item;
+            alert(Property Details:\n\nProperty ID: ${property.pid}\nName: ${property.name}\nLocation: ${property.location});
+          } else {
+            alert("Property not found.");
+          }
+          getPropertyForm.reset();
+        }
+      });
+    });
+
+    deletePropertyForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const pid = document.getElementById("delete-pid").value;
+
+      const params = {
+        TableName: "YOUR_DYNAMODB_TABLE_NAME",
+        Key: { pid }
+      };
+
+      docClient.delete(params, (err, data) => {
+        if (err) {
+          alert("Failed to delete the property.");
+        } else {
+          alert("Property deleted successfully.");
+          deletePropertyForm.reset();
+        }
+      });
+    });
+
+    listPropertiesBtn.addEventListener("click", listProperties);
+
+    function listProperties() {
+      const params = {
+        TableName: "YOUR_DYNAMODB_TABLE_NAME"
+      };
+
+      docClient.scan(params, (err, data) => {
+        if (err) {
+          alert("Failed to fetch the property list.");
+        } else {
+          renderPropertyList(data.Items);
+        }
+      });
+    }
+
+    function renderPropertyList(properties) {
+      propertyList.innerHTML = "";
+      properties.forEachPlease note that the code provided above assumes that you have properly configured the AWS SDK and have the necessary IAM credentials and permissions to access your DynamoDB table. You will need to replace the placeholders (YOUR_AWS_REGION, `YOUR
